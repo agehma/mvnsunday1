@@ -3,7 +3,7 @@ pipeline
     agent any
     stages
     {
-        stage('ContinousDownload')
+        stage('ContinuousDownload')
         {
             steps
             {
@@ -11,17 +11,17 @@ pipeline
                 {
                     try
                     {
-                        git 'https://github.com/agehma/mavenproject.git'
+                       git 'https://github.com/agehma/mavenproject.git' 
                     }
-                    catch(Exception e1)
+                    catch (Exception e1)
                     {
-                        mail bcc: '', body: 'unable to download  the code.', cc: '', from: '', replyTo: '', subject: 'Download Failed', to: 'git.team@gmail.com'
+                        mail bcc: '', body: 'first download failed', cc: '', from: '', replyTo: '', subject: 'download failed', to: 'gitteam@gmail.com'
                         exit(1)
                     }
                 }
             }
         }
-         stage('ContinousBuild')
+        stage('ContinuousBuild')
         {
             steps
             {
@@ -31,15 +31,15 @@ pipeline
                     {
                         sh 'mvn package'
                     }
-                    catch(Exception e2)
+                    catch (Exception e2)
                     {
-                        mail bcc: '', body: 'unable to create an artifact.', cc: '', from: '', replyTo: '', subject: 'Build Failed', to: 'developers.team@gmail.com'
+                        mail bcc: '', body: 'mvn failed to build artifact', cc: '', from: '', replyTo: '', subject: 'build failed', to: 'devteam@gmail.com'
                         exit(1)
                     }
                 }
             }
         }
-         stage('ContinousDeployment')
+        stage('ContinuousDeployment')
         {
             steps
             {
@@ -47,17 +47,17 @@ pipeline
                 {
                     try
                     {
-                        deploy adapters: [tomcat9(credentialsId: '45d9bd40-fd6d-4ce6-9fea-586d42ba0b31', path: '', url: 'http://172.31.13.149:8080')], contextPath: 'testapp', war: '**/*.war'
+                        deploy adapters: [tomcat9(credentialsId: '3933de1f-781a-4384-bab7-5258db7fbfd3', path: '', url: 'http://172.31.85.178:8080')], contextPath: 'testapp', war: '**/*.war'
                     }
-                    catch(Exception e3)
+                    catch (Exception e3)
                     {
-                        mail bcc: '', body: 'unable to deploy the artifact into tomcat on the QA server', cc: '', from: '', replyTo: '', subject: 'Deployment Failed', to: 'middleware.team@gmail.com'
+                        mail bcc: '', body: 'deployment to qa server failed', cc: '', from: '', replyTo: '', subject: 'deployment failed', to: 'mwteam@gmail.com' 
                         exit(1)
                     }
                 }
             }
         }
-        stage('ContinousTesting')
+        stage('ContinuousTesting')
         {
             steps
             {
@@ -65,18 +65,18 @@ pipeline
                 {
                     try
                     {
-                        git 'https://github.com/dtamukong/FunctionalTestingProf.git'
-                        sh 'java -jar /var/lib/jenkins/workspace/PipelineDJ/testing.jar'
+                        git 'https://github.com/agehma/testingscript1.git'
+                        sh 'java -jar /var/lib/jenkins/workspace/DeclarativePipelineE/testing.jar'
                     }
-                    catch(Exception e4)
+                    catch (Exception e4)
                     {
-                        mail bcc: '', body: 'Selenium test scripts fail', cc: '', from: '', replyTo: '', subject: 'Testing Fail', to: 'middleware.team@gmail.com'
+                        mail bcc: '', body: 'selenium failed to test', cc: '', from: '', replyTo: '', subject: 'selenium failed', to: 'seleniumteam@gmail.com'
                         exit(1)
                     }
                 }
             }
         }
-        stage('ContinousDelivery')
+        stage('ContinuousDelivery')
         {
             steps
             {
@@ -84,12 +84,11 @@ pipeline
                 {
                     try
                     {
-                        input message: 'Waiting for DM approver ', submitter: 'DJ'
-                        deploy adapters: [tomcat9(credentialsId: '45d9bd40-fd6d-4ce6-9fea-586d42ba0b31', path: '', url: 'http://172.31.0.76:8080')], contextPath: 'prodapp', war: '**/*.war'
+                        deploy adapters: [tomcat9(credentialsId: '3933de1f-781a-4384-bab7-5258db7fbfd3', path: '', url: 'http://172.31.85.56:8080')], contextPath: 'prodapp', war: '**/*.war'
                     }
-                    catch(Exception e4)
+                    catch (Exception e5)
                     {
-                        mail bcc: '', body: 'Unable to deliver', cc: '', from: '', replyTo: '', subject: 'Delivery Failed', to: 'delivery.team@gmail.com'
+                        mail bcc: '', body: 'faile to deliver into prodserver tomcat', cc: '', from: '', replyTo: '', subject: 'failed to deliver', to: 'deliveryteam@gmail.com'
                         exit(1)
                     }
                 }
@@ -97,3 +96,4 @@ pipeline
         }
     }
 }
+
